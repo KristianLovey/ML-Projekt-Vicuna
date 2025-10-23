@@ -27,6 +27,26 @@ Nakon toga moramo sirove podatke ("raw") pretvoriti u informativnije varijable p
 
 Time ćemo moći prepoznati uzorke, rizik, brzinu promijene, volumen trgovanja te ponavljanje uzoraka kroz vrijeme. Nakon što smo napravili sve značajke morat ćemo testirati sve i spremiti dobivene podatke jednom kada budemo zadovoljni s njima.
 
+1. Što ste odlučili napraviti sa null vrijednostima i zašto? 
+
+Nakon učitavanja podataka morali smo ukloniti null vrijednosti jer radimo sa podacima u vremenskoj seriji raspoređenim po satima. Zbog toga serija mora biti potpuna te su zbog korištenja značajki nastali navedeni null podaci. Te smo vrijednosti uklonili.
+
+2. Koje feature-e ste kreirali i zašto? Jeste li testirali njihovu informativnost? 
+
+Sve koje je Vicuna tim predložio. Informativnost značajki smo provjeravali vizualno (korelacijske matrice i grafove) i promatranjem koliko pojedine značajke variraju s cijenom.
+Neke značajke su pokazale jaku korelaciju s trendom cijene, dok su vremenske značajke imale manju, ali stabilnu informativnost.
+
+3. Ako ste izrađivali vizualizaciju, opišite zašto ste to radili i kako vam je to doprinijelo razumijevanju podataka. 
+
+Vizualizaciju smo radili kako bismo stekli uvid u osnovna svojstva vremenske serije i odnose između značajki.
+Prikazali smo linijske grafove cijene (Close) i volumena (Volume) kako bismo vidjeli trendove i volatilnost kroz vrijeme. Također smo prikazali korelacijsku matricu između značajki kako bismo uočili međusobne odnose.
+Vizualna analiza nam je pomogla da razumijemo sezonalne obrasce (npr. razlike po danima u tjednu) i prepoznamo periode povećane aktivnosti tržišta.
+
+4. Koju metodu unakrsne validacije ste koristili? Kako ste pripremili skup podataka za sljedeći korak?
+
+Nismo koristili unakrsnu validaciju nego smo podatke podijelili vremenski, prvih 80% se koristi za treniranje, a preostalih 20% za testiranje modela. Time smo osigurali da model uči samo iz prošlih podataka i da se evaluira na kasnijem razdoblju.
+
+
 ## 2. Modeliranje i evaluacija
 
 ## 3. Izgradnja i kontejnerizacija API-a
