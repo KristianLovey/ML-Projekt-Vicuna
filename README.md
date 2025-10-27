@@ -80,10 +80,10 @@ U obzir smo uzeli više vrsta modela (linearne, stabla odluke, klasifikacijske i
 6. Kako biste primijenili model u realnom vremenu (on-line predikcija)?
     Model se lako može koristiti u realnom vremenu. Zamišljamo to tako da svakih sat vremena stigne novi podatak o cijeni, iz njega se izračunaju svi tehnički indikatori, i onda se ti podaci pošalju kroz model. Model vraća 0 ako očekuje pad ili 1 ako očekuje rast. Cijeli proces je automatiziran kroz Pipeline, koji samostalno radi imputaciju, skaliranje i predikciju. Trenirani model spremili smo pomoću joblib, tako da ga kasnije možemo jednostavno učitati i koristiti u API-ju.
 
-        ```import joblib
-        joblib.dump(pipe, "btc_direction_model.pkl")```
+        import joblib
+        joblib.dump(pipe, "btc_direction_model.pkl")
 
-        ```model = joblib.load("btc_direction_model.pkl")
-        pred = model.predict(new_data)```
+        model = joblib.load("btc_direction_model.pkl")
+        pred = model.predict(new_data)
 
 ## 3. Izgradnja i kontejnerizacija API-a
