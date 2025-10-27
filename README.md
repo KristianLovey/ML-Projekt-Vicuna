@@ -29,7 +29,7 @@ Time ćemo moći prepoznati uzorke, rizik, brzinu promijene, volumen trgovanja t
 
 1. Što ste odlučili napraviti sa null vrijednostima i zašto? 
 
-Nakon učitavanja podataka morali smo ukloniti null vrijednosti jer radimo sa podacima u vremenskoj seriji raspoređenim po satima. Zbog toga serija mora biti potpuna te su zbog korištenja značajki nastali navedeni null podaci. Te smo vrijednosti uklonili.
+Nakon učitavanja podataka morali smo ukloniti null vrijednosti jer radimo sa podacima u vremenskoj seriji raspoređenim po satima. Zbog toga serija mora biti potpuna te su zbog korištenja značajki nastali navedeni null podaci. Te smo vrijednosti uklonili kao i duplikate i neželjene vrijednosti.
 
 2. Koje feature-e ste kreirali i zašto? Jeste li testirali njihovu informativnost? 
 
@@ -48,5 +48,42 @@ Nismo koristili unakrsnu validaciju nego smo podatke podijelili vremenski, prvih
 
 
 ## 2. Modeliranje i evaluacija
+Nakon što smo bili zadovoljni kvalitetom i reprezentativnošću skupa podataka, pristupili smo izradi i pripremi modela strojnog učenja za predviđanje budućih promjena cijene Bitcoina. Cilj modela nije bio savršeno predvidjeti apsolutnu vrijednost cijene, već smjer promjene (rast ili pad) na osnovi razvijenih tehničkih značajki.
+
+U obzir smo uzeli više vrsta modela (linearne, stabla odluke, klasifikacijske i neuronske mreže), no fokusirali smo se na klasifikacijski pristup zbog prirode ciljne varijable.
+
+1. Jeste li koristili regresijski ili klasifikacijski model? 
+    Koristili smo klasifikacijski model. Model je treniran da predvidi binarni ishod — hoće li se cijena u sljedećem satu povećati ili smanjiti (1 = rast, 0 = pad). Takav pristup bolje odgovara problemu trgovinskog odlučivanja (kupiti ili prodati) nego predviđanje same numeričke vrijednosti.
+
+2. Koju ste ciljnu varijablu koristili? 
+    Ciljna varijabla bila je target_cls, definirana kao:
+
+        target\_cls = \begin{cases} 1, & \text{ako je logaritamski povrat veći od +0.1%} \\ 0, & \text{ako je logaritamski povrat manji od -0.1%} \\ \text{NaN}, & \text{inače (neutralna promjena)} \end{cases}
+
+    Na ovaj način izbacili smo slučajeve u kojima se cijena gotovo nije promijenila, čime smo smanjili šum u podacima.
+
+3. Koje ste modele isprobali i koji se pokazao najboljim? 
+    Ispitali smo nekoliko modela:
+    • Logističku regresiju (kao jednostavnu baznu varijantu)
+    • Random Forest, koji kombinira više stabala odluke
+    • Linearne regresijske pristupe za usporedbu
+    Najbolje se pokazao Random Forest, jer može uhvatiti nelinearne odnose između značajki i ne pati od problema koje linearni modeli imaju kad su podaci kompleksni. Osim toga, stabilan je i ne traži kompliciranu pripremu podataka.
+
+4. Kako ste procjenjivali performanse? 
+    Performanse modela smo procjenjivali pomoću točnosti pogodaka (HIT rate) – koliko puta model točno predvidi smjer kretanja cijene. Podatke smo podijelili vremenski: prvih 80 % koristili smo za treniranje, a zadnjih 20 % za testiranje. Tako smo osigurali da model uči samo iz prošlosti i da se testira na budućem razdoblju. Kako bismo dodatno provjerili stabilnost, napravili smo i rolling evaluaciju – model smo pomicali kroz više vremenskih prozora i gledali kako mu se točnost mijenja kroz vrijeme. Prosječna točnost bila je oko 0.52, što znači da model ima malu, ali stvarnu prednost u odnosu na slučajno pogađanje (0.50).
+
+5. Kako biste znali da vaš model nije samo overfit na povijest? 
+    Da bismo izbjegli overfitting, pazili smo da se model nikada ne trenira i testira na istim vremenskim periodima.
+    Koristili smo vremenski odvojene skupove i testirali ga samo na budućim podacima.
+    Također, sve značajke (poput RSI-a, SMA-a, MACD-a i volatilnosti) izračunavali smo samo iz prošlih vrijednosti, tako da model ne može “vidjeti u budućnost”. Osim toga, rezultat nije previsok, što je zapravo dobar znak jer pokazuje da model ne pamti povijest nego stvarno generalizira obrasce iz podataka.
+
+6. Kako biste primijenili model u realnom vremenu (on-line predikcija)?
+    Model se lako može koristiti u realnom vremenu. Zamišljamo to tako da svakih sat vremena stigne novi podatak o cijeni, iz njega se izračunaju svi tehnički indikatori, i onda se ti podaci pošalju kroz model. Model vraća 0 ako očekuje pad ili 1 ako očekuje rast. Cijeli proces je automatiziran kroz Pipeline, koji samostalno radi imputaciju, skaliranje i predikciju. Trenirani model spremili smo pomoću joblib, tako da ga kasnije možemo jednostavno učitati i koristiti u API-ju.
+
+        ```import joblib
+        joblib.dump(pipe, "btc_direction_model.pkl")```
+
+        ```model = joblib.load("btc_direction_model.pkl")
+        pred = model.predict(new_data)```
 
 ## 3. Izgradnja i kontejnerizacija API-a
