@@ -1,5 +1,5 @@
 # ML-Projekt-Vicuna
-Selekcijski projekt za posao u Vicuna d.o.o. Projekt izvodi prediktivni model koji na temelju povijesnih podataka predviđa sljedeću vrijednost cijene (ili povrata). Prema tome pitanje koje ćemo riješavati ovim modelom glasi: "Može li se pomoću prediktivnog modela na temelju povijesnih podataka predvidjeti vrijednost budućih cijena?"
+Ovaj projekt izrađen je kao dio selekcijskog zadatka za Vicuna d.o.o. Cilj je bio razviti model koji na temelju povijesnih satnih podataka o cijeni Bitcoina predviđa budući smjer kretanja cijene pomoću tehničkih indikatora i algoritama strojnog učenja. Prema tome pitanje koje ćemo riješavati ovim modelom glasi: "Može li se pomoću prediktivnog modela na temelju povijesnih podataka predvidjeti vrijednost budućih cijena?"
 
 Projekt ćemo provesti u nekoliko segmenata: "Analiza i priprema podataka", "Modeliranje i evaluacija" te "Izgradnja i kontejnerizacija API-a".
 
@@ -58,7 +58,10 @@ U obzir smo uzeli više vrsta modela (linearne, stabla odluke, klasifikacijske i
 2. Koju ste ciljnu varijablu koristili? 
     Ciljna varijabla bila je target_cls, definirana kao:
 
-        target\_cls = \begin{cases} 1, & \text{ako je logaritamski povrat veći od +0.1%} \\ 0, & \text{ako je logaritamski povrat manji od -0.1%} \\ \text{NaN}, & \text{inače (neutralna promjena)} \end{cases}
+        target_cls = 
+        - 1 → ako je logaritamski povrat veći od +0.1 %
+        - 0 → ako je manji od -0.1 %
+        - NaN → ako je promjena između -0.1 % i +0.1 %
 
     Na ovaj način izbacili smo slučajeve u kojima se cijena gotovo nije promijenila, čime smo smanjili šum u podacima.
 
@@ -85,5 +88,7 @@ U obzir smo uzeli više vrsta modela (linearne, stabla odluke, klasifikacijske i
 
         model = joblib.load("btc_direction_model.pkl")
         pred = model.predict(new_data)
+
+Zaključno, model se pokazao kao solidan temelj za razumijevanje odnosa između tehničkih indikatora i promjena cijene. Iako ne daje visoku točnost, uspješno prepoznaje obrasce i može se nadograđivati složenijim metodama poput neuronskih mreža ili kombiniranih modela.
 
 ## 3. Izgradnja i kontejnerizacija API-a
