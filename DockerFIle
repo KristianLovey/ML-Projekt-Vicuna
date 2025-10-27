@@ -1,0 +1,14 @@
+# Koristi službenu Python sliku
+FROM python:3.10-slim
+
+# Radni direktorij
+WORKDIR /app
+
+# Kopiraj sve u kontejner
+COPY . /app
+
+# Instaliraj potrebne pakete
+RUN pip install --no-cache-dir fastapi uvicorn scikit-learn pandas joblib
+
+# Pokreni API
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
