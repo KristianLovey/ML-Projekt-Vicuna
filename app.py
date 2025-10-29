@@ -34,7 +34,7 @@ def info():
 def predict(data: InputData):
     try:
         df = pd.DataFrame([data.model_dump()])
-        # dodaj osnovne izračune koje model očekuje
+     
         df["ratio_high_low"] = df["High"] / df["Low"]
         df["ratio_close_open"] = df["Close"] / df["Open"]
         df["momentum"] = df["Close"] - df["Open"]
@@ -42,7 +42,7 @@ def predict(data: InputData):
         df["day_of_week"] = pd.Timestamp.now().dayofweek
         df["month"] = pd.Timestamp.now().month
 
-        # ako fali neki stupac koji je model imao, dodaj nule
+    
         expected_cols = model.feature_names_in_
         for col in expected_cols:
             if col not in df.columns:
