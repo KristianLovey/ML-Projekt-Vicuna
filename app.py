@@ -5,7 +5,7 @@ import numpy as np
 import joblib
 
 
-model = joblib.load("btc_direction_model.pkl")
+model = joblib.load("btc_direction_model_docker.pkl")
 
 
 app = FastAPI(
